@@ -53,7 +53,7 @@ def llm_section_identification(text_from_pdf):
         Each chunk should be numbered sequentially, followed by a hyphen, and then the chunk itself.
         Provide only the ordered chunks — no introduction text, no conclusion text and no explanation of your task. 
         At the very beginning of the output, include "candidate_name: <Name>" where you will write the name of the candidate you find in the resume.
-        If perfectly identical section of information is repeating itself across the document, only output it once.
+        If perfectly identical section of information is repeating itself across the document, only output it once. For example, footnote or header may repeat itself so only output once.
 
         Here's the format structure to follow:
 
