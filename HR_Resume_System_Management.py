@@ -38,7 +38,7 @@ def llm_section_identification(text_from_pdf):
     """Identify sections in text using LLM."""
     model = genai.GenerativeModel("gemini-1.5-flash")
     llm_prompt = f"""
-        Segment the provided context into numbered chunks that adhere to the following guidelines:
+        Segment the provided resume of a candidate into numbered chunks that adhere to the following guidelines:
 
         Identify natural breaks in the text, such as topic shifts, paragraph breaks, or sentence ends, similar to how a human would.
         Ensure each chunk maintains logical coherence with the content before and after it, using full sentences only.
@@ -46,21 +46,23 @@ def llm_section_identification(text_from_pdf):
         Avoid redundant or overlapping content between chunks, ensuring each contains unique information.
         Preserve any existing formatting, such as lists or subheadings, within each chunk to maintain the document's original structure.
 
-        Do not modify, summarize or do anything to the context provided. You chunk it and output it as it is.
+        Do not modify, summarize or do anything to the candidate resume provided. You chunk it and output it as it is.
 
         Format your output as follows:
 
         Each chunk should be numbered sequentially, followed by a hyphen, and then the chunk itself.
-        Provide only the ordered chunks—no introductory or concluding text. At the very beginning of the output, we should also have a field named "candidate_name" followed by ":" and then the name of the candidate.
+        Provide only the ordered chunks — no introduction text, no conclusion text and no explanation of your task. 
+        At the very beginning of the output, include "candidate_name: <Name>" where you will write the name of the candidate you find in the resume.
+
+        Here's the format structure to follow:
 
         candidate_name: <Name>
         1 - Chunk 1
         2 - Chunk 2
         ...
 
-        Here's the context to numbered chunks:
+        Here's the candidate resume to numbered chunks:
         {text_from_pdf}
-
     """
     try:
         response = model.generate_content(llm_prompt)
