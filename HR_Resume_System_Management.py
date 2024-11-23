@@ -132,7 +132,7 @@ def deserialize_embedding(json_string):
         return None
 
 # Main Streamlit App
-st.title("Unified Resume Processing & Query Application")
+st.title("AI-Powered Talent Discovery Assistant")
 
 # Sidebar Navigation
 app_mode = st.sidebar.radio(
