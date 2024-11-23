@@ -4,6 +4,7 @@ import numpy as np
 from scipy.spatial.distance import cosine
 import google.generativeai as genai
 import json
+import io
 
 # Configure the Google Gemini API key
 genai.configure(api_key="AIzaSyCOhsh-JWBd6B006GA0UgdIW6wRcNon7lk")
@@ -97,6 +98,18 @@ if uploaded_file is not None:
             # Display the results
             st.subheader("Top Matching Candidates")
             st.dataframe(top_candidates)
+
+            # Provide a download button for the results
+            csv_buffer = io.StringIO()
+            top_candidates.to_csv(csv_buffer, index=False)
+            csv_data = csv_buffer.getvalue()
+
+            st.download_button(
+                label="Download Results as CSV",
+                data=csv_data,
+                file_name="top_candidates.csv",
+                mime="text/csv"
+            )
 
 else:
     st.info("Please upload a CSV file to get started.")
