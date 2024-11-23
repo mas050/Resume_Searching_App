@@ -19,7 +19,19 @@ CREDENTIALS = {
 # Initialize session state for login
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
-    
+
+def login():
+    """Login screen."""
+    st.title("Login")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    if st.button("Login"):
+        if username in CREDENTIALS and CREDENTIALS[username] == password:
+            st.session_state["logged_in"] = True
+            st.success("Login successful!")
+        else:
+            st.error("Invalid username or password.")
+
 # Function Definitions
 def extract_text_from_pdf(pdf_file):
     """Extract text from a PDF file."""
