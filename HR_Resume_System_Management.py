@@ -147,10 +147,62 @@ if not st.session_state["logged_in"]:
 else:
     st.title("AI-Powered Talent Discovery Assistant")
 
-    # Sidebar Navigation
-    app_mode = st.sidebar.radio(
-        "Choose a function:",
-        ["Resume Processing", "Resume Query"]
-    )
+# Sidebar Navigation
+app_mode = st.sidebar.radio(
+    "Choose a function:",
+    ["Resume Processing", "Resume Query"]
+)
 
-    # Rest of your app code goes here...
+if app_mode == "Resume Processing":
+    st.header("Resume Processing Application")
+    uploaded_pdfs = st.file_uploader("Upload PDF files", type="pdf", accept_multiple_files=True)
+    uploaded_csv = st.file_uploader("Upload historical CSV (optional)", type="csv")
+    
+    if uploaded_pdfs and st.button("Process Files"):
+        result_df = process_uploaded_files(uploaded_pdfs, uploaded_csv)
+        if result_df is not None:
+            st.success("Processing completed!")
+            st.dataframe(result_df)
+            st.download_button(
+                "Download Results as CSV",
+                result_df.to_csv(index=False),
+                file_name="processed_resumes.csv",
+                mime="text/csv"
+            )
+
+elif app_mode == "Resume Query":
+    st.header("Resume Query Application")
+    uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
+    
+    if uploaded_file:
+        data = pd.read_csv(uploaded_file)
+        if 'embedded_chunk' in data.columns:
+            data['embedded_chunk'] = data['embedded_chunk'].apply(deserialize_embedding)
+        else:
+            st.error("The uploaded CSV does not contain an 'embedded_chunk' column.")
+            st.stop()
+        
+        user_question = st.text_input("Enter your question:")
+        if user_question:
+            user_embedding = generate_embedding(user_question)
+            if user_embedding is not None:
+                data['similarity'] = data['embedded_chunk'].apply(
+                    lambda chunk: cosine_similarity(user_embedding, chunk) if chunk is not None else -1
+                )
+                top_chunk_per_candidate = data.loc[data.groupby('candidate_name')['similarity'].idxmax()]
+                top_candidates = top_chunk_per_candidate.nlargest(10, 'similarity')
+                top_candidates['user_question'] = user_question
+                top_candidates = top_candidates[
+                    ['candidate_name', 'pdf_file_name', 'user_question', 'resume_section_content', 'similarity']
+                ]
+                st.subheader("Top Matching Candidates")
+                st.dataframe(top_candidates)
+                csv_buffer = io.StringIO()
+                top_candidates.to_csv(csv_buffer, index=False)
+                csv_data = csv_buffer.getvalue()
+                st.download_button(
+                    label="Download Results as CSV",
+                    data=csv_data,
+                    file_name="top_candidates.csv",
+                    mime="text/csv"
+                )
