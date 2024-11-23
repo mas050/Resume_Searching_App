@@ -29,7 +29,6 @@ def login():
         if username in CREDENTIALS and CREDENTIALS[username] == password:
             st.session_state["logged_in"] = True
             st.success("Login successful!")
-            st.experimental_rerun()  # Force a page rerun to update the app state
         else:
             st.error("Invalid username or password.")
 
