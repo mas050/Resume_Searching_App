@@ -3,3 +3,4 @@ pandas
 numpy
 scipy
 google-generativeai
+PyPDF2
