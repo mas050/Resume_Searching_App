@@ -9,7 +9,7 @@ import google.generativeai as genai
 import io
 
 # Configure Google Gemini API
-genai.configure(api_key="AIzaSyCOhsh-JWBd6B006GA0UgdIW6wRcNon7lk")
+genai.configure(api_key="AIzaSyDeM7zoHN2pm8OnK1E9x4-z33cOY8MYRo4")
 
 # Credentials for login
 CREDENTIALS = {
